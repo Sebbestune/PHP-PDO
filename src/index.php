@@ -1,21 +1,29 @@
 <?php
 
-echo "<h2>Example to connect to DB</h2>";
+$host ='db';
+$db   = 'company';
+$user = 'root';
+$pass = 'example';
+$charset = 'utf8mb4';
 
-$mysqli = new mysqli("db", "root", "example", "company");
-
-$sql = 'SELECT * from users';
-
-if($result = $mysqli->query(($sql))) {
-    while ($data = $result->fetch_object()) {
-        $users[] = $data;
-    }
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+try {
+     $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (\PDOException $e) {
+     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-foreach ($users as $user) {
-    echo "<br>";
-    echo $user->name . " " . $user->fav_color;
-    echo "<br>";
+$stmt = $pdo->query('SELECT name, fav_color FROM users');
+while ($row = $stmt->fetch())
+{
+    echo $row['name'] . "\n";
+    echo $row['fav_color'] . "\n";
 }
 
 ?>
+
